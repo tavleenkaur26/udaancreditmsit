@@ -1,21 +1,63 @@
 from sklearn.ensemble import RandomForestClassifier
+import numpy as np
 
-# Create model
-model = RandomForestClassifier()
+# -----------------------------
+# 1. SYNTHETIC DATA GENERATION
+# -----------------------------
+X = []
+y = []
 
-# Dummy training data
-X = [
-    [50000, 20000, 50, 0.6, 1000],
-    [20000, 18000, 20, 0.1, 900],
-    [70000, 30000, 60, 0.5, 1200],
-    [15000, 14000, 10, 0.05, 800]
-]
+for i in range(500):
 
-y = [1, 0, 1, 0]
+    income = np.random.randint(10000, 100000)
+    expense = np.random.randint(5000, 90000)
+    transactions = np.random.randint(5, 100)
+    avg_txn = np.random.randint(200, 5000)
 
-# Train model
+    savings_ratio = (income - expense) / (income + 1)
+    expense_income_ratio = expense / (income + 1)
+
+    features = [
+        income,
+        expense,
+        transactions,
+        savings_ratio,
+        avg_txn
+    ]
+
+    # LABEL RULE (SMART FINTECH LOGIC)
+    if savings_ratio > 0.25 and expense_income_ratio < 0.8:
+        label = 1   # good user
+    else:
+        label = 0   # risky user
+
+    X.append(features)
+    y.append(label)
+
+# -----------------------------
+# 2. TRAIN MODEL
+# -----------------------------
+model = RandomForestClassifier(
+    n_estimators=100,
+    max_depth=6,
+    random_state=42
+)
+
 model.fit(X, y)
 
-# Prediction function
+# -----------------------------
+# 3. PREDICTION FUNCTION
+# -----------------------------
 def predict_user(features):
-    return model.predict([features])[0]
+    prob = model.predict_proba([features])[0][1]
+
+    trust_score = int(prob * 100)
+
+    if trust_score > 70:
+        risk = "Low"
+    elif trust_score > 40:
+        risk = "Medium"
+    else:
+        risk = "High"
+
+    return trust_score, risk
