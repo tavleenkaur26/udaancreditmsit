@@ -1,6 +1,8 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 function LoanEligibility() {
+  const navigate = useNavigate();
   const [result, setResult] = useState(null);
   const [selectedFile, setSelectedFile] = useState(null);
 
@@ -21,6 +23,7 @@ function LoanEligibility() {
 
       const data = await res.json();
       setResult(data);
+      localStorage.setItem("loanResult", JSON.stringify(data));
 
     } catch (err) {
       console.error("Error:", err);
@@ -100,7 +103,7 @@ const handleDownload = () => {
 };
 
 const handleDashboard = () => {
-  alert("Redirect to dashboard (add routing later)");
+  navigate("/dashboard");
 };
 
   return (
