@@ -4,7 +4,13 @@ import pandas as pd
 from model import predict_user
 
 app = Flask(__name__)
-CORS(app)
+from flask_cors import CORS
+
+CORS(app, resources={
+    r"/*": {
+        "origins": "http://localhost:5173"
+    }
+})
 
 @app.route('/analyze', methods=['POST'])
 def analyze():
